@@ -8,6 +8,8 @@ var umenus = new Array(128);
 var setters = new Array(128);
 var receivers = new Array(128);
 var therecorder;
+var recEnable = this.patcher.getnamed('recEnable'); 
+var timeElapsed = this.patcher.getnamed('timeElapsed'); 
 var a = 0; 
 
 function createInputs(a) { 
@@ -33,6 +35,8 @@ function createInputs(a) {
                 this.patcher.connect(umenus[i], 0, setters[i], 0);
                 this.patcher.connect(setters[i], 0, receivers[i], 0);
                 this.patcher.connect(receivers[i], 0, therecorder, i);
+                this.patcher.connect(recEnable, 0, therecorder, 0);
+                this.patcher.connect(therecorder, 0, timeElapsed, 0);
 
             }
 }; 
