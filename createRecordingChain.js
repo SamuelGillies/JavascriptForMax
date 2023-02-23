@@ -26,6 +26,8 @@ function createInputs(a) {
                 this.patcher.remove(umenus[i]);
                 this.patcher.remove(setters[i]);
                 this.patcher.remove(receivers[i]);
+                umenus[i].presentation(0); 
+
             }
     }
 
@@ -35,10 +37,12 @@ function createInputs(a) {
         therecorder = this.patcher.newdefault(300, 300, "sfrecord~", a);
 
         for (var i = 0; i < a; i++) {
-                inputslist[i] = this.patcher.newdefault(300+(i * 100), 50, "receive", "audioInputs");
-                umenus[i] = this.patcher.newdefault(300+(i * 100), 100, "umenu");
-                setters[i] = this.patcher.newdefault(300+(i * 100), 150, "prepend", "set");
-                receivers[i] = this.patcher.newdefault(300+(i * 100), 200, "receive~");
+                inputslist[i] = this.patcher.newdefault(300+(i * 150), 50, "receive", "audioInputs");
+                umenus[i] = this.patcher.newdefault(300+(i * 150), 100, "umenu");
+                setters[i] = this.patcher.newdefault(300+(i * 150), 150, "prepend", "set");
+                receivers[i] = this.patcher.newdefault(300+(i * 150), 200, "receive~");
+
+                umenus[i].presentation(1); 
 
                 this.patcher.connect(inputslist[i], 0, umenus[i], 0);
                 this.patcher.connect(umenus[i], 0, setters[i], 0);
