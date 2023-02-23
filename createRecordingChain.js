@@ -10,23 +10,32 @@ var receivers = new Array(128);
 var therecorder;
 var recEnable = this.patcher.getnamed('recEnable'); 
 var timeElapsed = this.patcher.getnamed('timeElapsed'); 
+var numInputs = 0; 
 var a = 0; 
 
 function createInputs(a) { 
 
-    this.patcher.remove(therecorder);
+    if (a < 1) a = 1;
+    if (a > 16) a = 16; 
 
-    for (var i = 0; i < a; i++) {
-			this.patcher.remove(inputslist[i]);
-			this.patcher.remove(umenus[i]);
-            this.patcher.remove(setters[i]);
-			this.patcher.remove(receivers[i]);
-		}
+    if (numInputs) {
+        this.patcher.remove(therecorder);
 
-    therecorder = this.patcher.newdefault(300, 300, "sfrecord~", a);
+        for (var i = 0; i < numInputs; i++) {
+                this.patcher.remove(inputslist[i]);
+                this.patcher.remove(umenus[i]);
+                this.patcher.remove(setters[i]);
+                this.patcher.remove(receivers[i]);
+            }
+    }
 
-    for (var i = 0; i < a; i++) {
-                inputslist[i] = this.patcher.newdefault(300+(i * 100), 50, "receive", "receiveInputList");
+    numInputs = a; 
+
+    if (numInputs) {
+        therecorder = this.patcher.newdefault(300, 300, "sfrecord~", a);
+
+        for (var i = 0; i < a; i++) {
+                inputslist[i] = this.patcher.newdefault(300+(i * 100), 50, "receive", "audioInputs");
                 umenus[i] = this.patcher.newdefault(300+(i * 100), 100, "umenu");
                 setters[i] = this.patcher.newdefault(300+(i * 100), 150, "prepend", "set");
                 receivers[i] = this.patcher.newdefault(300+(i * 100), 200, "receive~");
@@ -39,6 +48,7 @@ function createInputs(a) {
                 this.patcher.connect(therecorder, 0, timeElapsed, 0);
 
             }
+    }
 }; 
 
 function testing(a) {
