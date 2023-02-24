@@ -16,6 +16,18 @@ var numInputs = 0;
 var a = 0; 
 var pos = 20; 
 
+function clear() {
+    this.patcher.remove(therecorder);
+        this.patcher.remove(inputslist);
+
+        for (var i = 0; i < setters.length; i++) {
+                //umenus[i].presentation(0); 
+                this.patcher.remove(umenus[i]);
+                this.patcher.remove(setters[i]);
+                this.patcher.remove(receivers[i]);
+            }
+}
+
 function createInputs(a) { 
 
     if (a < 1) a = 1;
@@ -24,13 +36,14 @@ function createInputs(a) {
     // remove existing objects
     if (numInputs) {
         this.patcher.remove(therecorder);
+        this.patcher.remove(inputslist);
 
         for (var i = 0; i < numInputs; i++) {
-                this.patcher.remove(inputslist[i]);
                 this.patcher.remove(umenus[i]);
                 this.patcher.remove(setters[i]);
                 this.patcher.remove(receivers[i]);
-                umenus[i].presentation(0); 
+                
+                // umenus[i].presentation(0); 
 
             }
     }
@@ -42,38 +55,32 @@ function createInputs(a) {
         inputslist = this.patcher.newdefault(20, -50, "receive", "audioInputs");
 
         for (var i = 0; i < a; i++) {
-                if ((i >= 0) && (i <= 3)) { pos = 50 }; 
-                if ((i >= 4) && (i <= 7)) { pos = 80 };
-                if ((i >= 8) && (i <= 11)) { pos = 110 };
-                if ((i >= 12) && (i <= 15)) { pos = 140 };
 
-                umenus[i] = this.patcher.newdefault(20, (80+(i * 30)), "umenu");
-                //umenus[i] = this.patcher.newdefault(20+((i % 4) * 110), pos, "umenu");
+                pos = Math.round((i + 1) / 2);
 
+                umenus[i] = this.patcher.newdefault(20+((i % 2) * 110), (pos * 30), "umenu");
+                setters[i] = this.patcher.newdefault(300+(i * 150), 150, "prepend", "set");
+                receivers[i] = this.patcher.newdefault(300+(i * 150), 200, "receive~");
 
-                setters[i] = this.patcher.newdefault(20+(i * 150), 150, "prepend", "set");
-                receivers[i] = this.patcher.newdefault(20+(i * 150), 200, "receive~");
-
-                umenus[i].presentation(1); // add umenus to presentation mode
 
                 this.patcher.connect(inputslist, 0, umenus[i], 0);
-                this.patcher.connect(umenus[i], 0, setters[i], 0);
-                this.patcher.connect(umenus[i], 0, settingsOutput, (i + 1));
-                this.patcher.connect(settingsInput, (i), umenus[i], 0);
+                this.patcher.connect(umenus[i], 1, setters[i], 0);
                 this.patcher.connect(setters[i], 0, receivers[i], 0);
                 this.patcher.connect(receivers[i], 0, therecorder, i);
                 this.patcher.connect(recEnable, 0, therecorder, 0);
                 this.patcher.connect(therecorder, 0, timeElapsed, 0);
+                // this.patcher.connect(umenus[i], 0, settingsOutput, (i + 1));
+                // this.patcher.connect(settingsInput, (i), umenus[i], 0);
 
-
+                umenus[i].presentation(1); // add umenus to presentation mode
             }
     }
 }; 
 
-function testing(a) {
-    if (a < 0) {
-        console.log('input detected'); 
-    } else {
-        console.log('input still detected'); 
+function connectSettings(a) {
+    for (var i = 0; i < a; i++) {
+        this.patcher.connect(umenus[i], 0, settingsOutput, (i + 1));
+        this.patcher.connect(settingsInput, (i), umenus[i], 0);
+
     }
 };
